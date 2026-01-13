@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useState } from "react"
-import { Sidebar } from "@/components/sidebar/page"
+import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import { Header } from "@/components/header/page"
 import { SnippetGrid } from "@/components/snippet-grid/page"
 import { EmptyState } from "@/components/empty-state/page"
@@ -13,6 +13,11 @@ import { PlusSignIcon, LayoutIcon } from "@hugeicons/core-free-icons"
 import { Snippet } from "@/lib/types"
 import { useSnippets } from "@/hooks/use-snippets"
 import { useFilters } from "@/hooks/use-filters"
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 
 interface DashboardProps {
@@ -21,7 +26,6 @@ interface DashboardProps {
 }
 
 export function Dashboard({ onSignOut, className }: DashboardProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
@@ -60,15 +64,8 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
   }
 
   return (
-    <div
-      className={cn(
-        "flex h-screen bg-background text-foreground overflow-hidden",
-        className
-      )}
-    >
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+    <SidebarProvider>
+      <AppSidebar
         selectedFolder={selectedFolder}
         onFolderSelect={setSelectedFolder}
         selectedLang={selectedLang}
@@ -78,13 +75,10 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
         allTags={allTags}
         onSignOut={onSignOut}
       />
-
-      <main className="flex-1 flex flex-col h-full min-w-0">
+      <SidebarInset>
         <Header
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onMenuClick={() => setIsSidebarOpen(true)}
-          isSidebarOpen={isSidebarOpen}
           onNewSnippet={handleNewSnippet}
         />
 
@@ -139,17 +133,17 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
           <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} className="size-6" />
           <span className="sr-only">New snippet</span>
         </Button>
-      </main>
 
-      <EditorModal
-        isOpen={isEditorOpen}
-        snippet={editingSnippet}
-        onClose={() => {
-          setIsEditorOpen(false)
-          setEditingSnippet(null)
-        }}
-        onSave={handleSaveSnippet}
-      />
-    </div>
+        <EditorModal
+          isOpen={isEditorOpen}
+          snippet={editingSnippet}
+          onClose={() => {
+            setIsEditorOpen(false)
+            setEditingSnippet(null)
+          }}
+          onSave={handleSaveSnippet}
+        />
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

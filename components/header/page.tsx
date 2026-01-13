@@ -3,7 +3,6 @@
 import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  MenuIcon,
   SearchIcon,
   SettingsIcon,
   PlusSignIcon,
@@ -11,13 +10,15 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
 interface HeaderProps {
   searchQuery: string
   onSearchChange: (query: string) => void
-  onMenuClick: () => void
-  isSidebarOpen: boolean
+  onMenuClick?: () => void
+  isSidebarOpen?: boolean
   onNewSnippet: () => void
   className?: string
 }
@@ -33,17 +34,13 @@ export function Header({
   return (
     <header
       className={cn(
-        "h-16 border-b border-border bg-background/80 backdrop-blur-md px-6 flex items-center justify-between z-30 sticky top-0",
+        "flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/80 backdrop-blur-md px-4",
         className
       )}
     >
-      <div className="flex items-center gap-4 flex-1">
-        {!isSidebarOpen && (
-          <Button variant="ghost" size="icon" onClick={onMenuClick}>
-            <HugeiconsIcon icon={MenuIcon} strokeWidth={2} />
-            <span className="sr-only">Open sidebar</span>
-          </Button>
-        )}
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mr-2 h-4" />
         <div className="relative max-w-md w-full">
           <HugeiconsIcon
             icon={SearchIcon}
@@ -59,7 +56,7 @@ export function Header({
           />
         </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-3">
         <ThemeToggle />
         <Button variant="ghost" size="icon">
           <HugeiconsIcon icon={SettingsIcon} strokeWidth={2} />
