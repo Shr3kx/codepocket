@@ -4,7 +4,6 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Copy01Icon,
   DeleteIcon,
   EditIcon,
   FolderIcon,
@@ -38,12 +37,6 @@ export function SnippetCard({
   onDelete,
   className,
 }: SnippetCardProps) {
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(snippet.code);
-    // You might want to use a toast from shadcn instead of alert
-    alert("Code copied to clipboard!");
-  };
-
   return (
     <motion.div
       layout
@@ -70,15 +63,6 @@ export function SnippetCard({
               </CardDescription>
             </div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={copyToClipboard}
-                className="size-7"
-              >
-                <HugeiconsIcon icon={Copy01Icon} strokeWidth={2} />
-                <span className="sr-only">Copy code</span>
-              </Button>
               <Button
                 variant="ghost"
                 size="icon"

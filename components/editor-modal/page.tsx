@@ -1,20 +1,26 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { HugeiconsIcon } from "@hugeicons/react"
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Cancel01Icon,
   AiMagicIcon,
   LoadingIcon,
   FloppyDiskIcon,
-} from "@hugeicons/core-free-icons"
-import { Snippet, LANGUAGES, FOLDERS } from "@/lib/types"
+} from "@hugeicons/core-free-icons";
+import { Snippet, LANGUAGES, FOLDERS } from "@/lib/types";
 // import { explainCode, suggestTags } from "@/services/geminiService"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {
+  vscDarkPlus,
+  vs,
+} from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { useTheme } from "next-themes";
 import {
   Select,
   SelectContent,
@@ -22,10 +28,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { cn } from "@/lib/utils";
 
 interface EditorModalProps {
   snippet?: Snippet | null;
@@ -41,37 +47,43 @@ export function EditorModal({
   isOpen,
 }: EditorModalProps) {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    code: '',
-    language: 'javascript' as string,
+    title: "",
+    description: "",
+    code: "",
+    language: "javascript" as string,
     tags: [] as string[],
-    folder: 'Personal' as string,
-  })
-  const [tagInput, setTagInput] = useState('')
-  const [isAiLoading, setIsAiLoading] = useState(false)
+    folder: "Personal" as string,
+  });
+  const [tagInput, setTagInput] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (snippet) {
       setFormData({
-        title: snippet.title || '',
-        description: snippet.description || '',
-        code: snippet.code || '',
-        language: snippet.language || 'javascript',
+        title: snippet.title || "",
+        description: snippet.description || "",
+        code: snippet.code || "",
+        language: snippet.language || "javascript",
         tags: snippet.tags || [],
-        folder: snippet.folder || 'Personal',
-      })
+        folder: snippet.folder || "Personal",
+      });
     } else {
       setFormData({
-        title: '',
-        description: '',
-        code: '',
-        language: 'javascript',
+        title: "",
+        description: "",
+        code: "",
+        language: "javascript",
         tags: [],
-        folder: 'Personal',
-      })
+        folder: "Personal",
+      });
     }
-  }, [snippet])
+  }, [snippet]);
 
   const handleAiOptimize = async () => {
     if (!formData.code) return;
@@ -87,46 +99,48 @@ export function EditorModal({
       //   description: explanation || prev.description,
       //   tags: [...new Set([...(prev.tags || []), ...tags])]
       // }));
-      
+
       // Placeholder for now
       await new Promise(resolve => setTimeout(resolve, 500));
-      alert("AI optimization feature is not yet configured. Please set up the API key.");
+      alert(
+        "AI optimization feature is not yet configured. Please set up the API key."
+      );
     } catch (error) {
-      console.error('AI optimization error:', error);
+      console.error("AI optimization error:", error);
     } finally {
       setIsAiLoading(false);
     }
   };
 
   const handleAddTag = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
+    if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
       setFormData(prev => ({
         ...prev,
-        tags: [...new Set([...(prev.tags || []), tagInput.trim()])]
+        tags: [...new Set([...(prev.tags || []), tagInput.trim()])],
       }));
-      setTagInput('');
+      setTagInput("");
     }
   };
 
   const removeTag = (tag: string) => {
     setFormData(prev => ({
       ...prev,
-      tags: (prev.tags || []).filter(t => t !== tag)
+      tags: (prev.tags || []).filter(t => t !== tag),
     }));
   };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
-  const languageItems = LANGUAGES.map((lang) => ({
+  const languageItems = LANGUAGES.map(lang => ({
     label: lang.charAt(0).toUpperCase() + lang.slice(1),
     value: lang,
-  }))
+  }));
 
-  const folderItems = FOLDERS.map((folder) => ({
+  const folderItems = FOLDERS.map(folder => ({
     label: folder,
     value: folder,
-  }))
+  }));
 
   return (
     <AnimatePresence>
@@ -142,7 +156,7 @@ export function EditorModal({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
           className={cn(
             "ring-foreground/10 bg-background text-foreground relative w-full max-w-4xl rounded-xl shadow-2xl border border-border ring-1 overflow-hidden flex flex-col max-h-[90vh]"
           )}
@@ -171,7 +185,7 @@ export function EditorModal({
                     id="snippet-title"
                     type="text"
                     value={formData.title}
-                    onChange={(e) =>
+                    onChange={e =>
                       setFormData({ ...formData, title: e.target.value })
                     }
                     placeholder="E.g. React useFetch Hook"
@@ -182,9 +196,9 @@ export function EditorModal({
                   <Select
                     items={languageItems}
                     value={formData.language}
-                    onValueChange={(value) => {
+                    onValueChange={value => {
                       if (value) {
-                        setFormData({ ...formData, language: value })
+                        setFormData({ ...formData, language: value });
                       }
                     }}
                   >
@@ -193,7 +207,7 @@ export function EditorModal({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {languageItems.map((item) => (
+                        {languageItems.map(item => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -207,9 +221,9 @@ export function EditorModal({
                   <Select
                     items={folderItems}
                     value={formData.folder}
-                    onValueChange={(value) => {
+                    onValueChange={value => {
                       if (value) {
-                        setFormData({ ...formData, folder: value })
+                        setFormData({ ...formData, folder: value });
                       }
                     }}
                   >
@@ -218,7 +232,7 @@ export function EditorModal({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {folderItems.map((item) => (
+                        {folderItems.map(item => (
                           <SelectItem key={item.value} value={item.value}>
                             {item.label}
                           </SelectItem>
@@ -231,33 +245,23 @@ export function EditorModal({
 
               <div className="space-y-4">
                 <Field>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <FieldLabel htmlFor="snippet-description">
-                      Description
-                    </FieldLabel>
-                    <Button
-                      variant="ghost"
-                      size="xs"
+                  <FieldLabel
+                    htmlFor="snippet-description"
+                    className="flex items-center justify-between w-full"
+                  >
+                    <span>Description</span>
+                    <button
+                      className="cursor-pointer"
                       onClick={handleAiOptimize}
                       disabled={isAiLoading || !formData.code}
-                      className="text-xs h-auto p-1 gap-1"
                     >
-                      {isAiLoading ? (
-                        <HugeiconsIcon
-                          icon={LoadingIcon}
-                          strokeWidth={2}
-                          className="size-3 animate-spin"
-                        />
-                      ) : (
-                        <HugeiconsIcon icon={AiMagicIcon} strokeWidth={2} className="size-3" />
-                      )}
                       Generate with AI
-                    </Button>
-                  </div>
+                    </button>
+                  </FieldLabel>
                   <Textarea
                     id="snippet-description"
                     value={formData.description}
-                    onChange={(e) =>
+                    onChange={e =>
                       setFormData({
                         ...formData,
                         description: e.target.value,
@@ -270,13 +274,10 @@ export function EditorModal({
                 <Field>
                   <FieldLabel htmlFor="snippet-tags">Tags</FieldLabel>
                   <div className="flex flex-wrap gap-2 p-2 border border-border rounded-md bg-input/20 dark:bg-input/30 min-h-7">
-                    {formData.tags?.map((tag) => (
+                    {formData.tags?.map(tag => (
                       <Badge key={tag} variant="secondary" className="gap-1">
                         {tag}
-                        <button
-                          onClick={() => removeTag(tag)}
-                          className="ml-1"
-                        >
+                        <button onClick={() => removeTag(tag)} className="ml-1">
                           <HugeiconsIcon
                             icon={Cancel01Icon}
                             strokeWidth={2}
@@ -289,7 +290,7 @@ export function EditorModal({
                     <Input
                       id="snippet-tags"
                       value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
+                      onChange={e => setTagInput(e.target.value)}
                       onKeyDown={handleAddTag}
                       className="bg-transparent border-0 focus-visible:ring-0 h-auto p-0 text-xs min-w-[80px] flex-1"
                       placeholder="Add tag..."
@@ -301,15 +302,63 @@ export function EditorModal({
 
             <Field>
               <FieldLabel htmlFor="snippet-code">Code Content</FieldLabel>
-              <Textarea
-                id="snippet-code"
-                value={formData.code}
-                onChange={(e) =>
-                  setFormData({ ...formData, code: e.target.value })
-                }
-                className="h-[300px] font-mono text-xs"
-                placeholder="Paste your code here..."
-              />
+              <div className="relative h-[300px] rounded-md border border-border overflow-hidden bg-background">
+                <div className="absolute inset-0 overflow-auto [&>pre]:!bg-transparent">
+                  <SyntaxHighlighter
+                    language={formData.language || "javascript"}
+                    style={
+                      mounted && (resolvedTheme === "dark" || theme === "dark")
+                        ? vscDarkPlus
+                        : vs
+                    }
+                    customStyle={{
+                      margin: 0,
+                      padding: "0.75rem",
+                      fontSize: "0.75rem",
+                      lineHeight: "1.5",
+                      background: "transparent",
+                      minHeight: "100%",
+                    }}
+                    PreTag="div"
+                    codeTagProps={{
+                      style: {
+                        fontFamily:
+                          "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+                      },
+                    }}
+                  >
+                    {formData.code || " "}
+                  </SyntaxHighlighter>
+                </div>
+                <Textarea
+                  id="snippet-code"
+                  value={formData.code}
+                  onChange={e =>
+                    setFormData({ ...formData, code: e.target.value })
+                  }
+                  onScroll={e => {
+                    const target = e.target as HTMLTextAreaElement;
+                    const highlightDiv = target.parentElement?.querySelector(
+                      'div[class*="overflow-auto"]'
+                    ) as HTMLElement;
+                    if (highlightDiv) {
+                      highlightDiv.scrollTop = target.scrollTop;
+                      highlightDiv.scrollLeft = target.scrollLeft;
+                    }
+                  }}
+                  className="relative h-full w-full font-mono text-xs bg-transparent text-transparent caret-foreground resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-transparent"
+                  placeholder="Paste your code here..."
+                  style={{
+                    color: "transparent",
+                    WebkitTextFillColor: "transparent",
+                    fontFamily:
+                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+                    fontSize: "0.75rem",
+                    lineHeight: "1.5",
+                    padding: "0.75rem",
+                  }}
+                />
+              </div>
             </Field>
           </div>
 
@@ -325,5 +374,5 @@ export function EditorModal({
         </motion.div>
       </div>
     </AnimatePresence>
-  )
+  );
 }
