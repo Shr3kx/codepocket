@@ -9,6 +9,7 @@ interface SnippetGridProps {
   snippets: Snippet[]
   onEdit: (snippet: Snippet) => void
   onDelete: (id: string) => void
+  onMove?: (snippetId: string, folder: string) => void
   className?: string
 }
 
@@ -16,6 +17,7 @@ export function SnippetGrid({
   snippets,
   onEdit,
   onDelete,
+  onMove,
   className,
 }: SnippetGridProps) {
   if (snippets.length === 0) {
@@ -33,6 +35,7 @@ export function SnippetGrid({
             snippet={snippet}
             onEdit={onEdit}
             onDelete={onDelete}
+            onMove={onMove}
           />
         ))}
       </AnimatePresence>

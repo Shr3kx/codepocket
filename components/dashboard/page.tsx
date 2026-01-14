@@ -5,21 +5,34 @@ import { useState } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Header } from "@/components/header/page";
 import { SnippetGrid } from "@/components/snippet-grid/page";
+import { SnippetList } from "@/components/snippet-list/page";
+import { SnippetCompactGrid } from "@/components/snippet-compact-grid/page";
 import { EmptyState } from "@/components/empty-state/page";
 import { EditorModal } from "@/components/editor-modal/page";
 import { SettingsModal } from "@/components/settings-modal/page";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { PlusSignIcon, LayoutIcon } from "@hugeicons/core-free-icons";
+import {
+  PlusSignIcon,
+  CheckListIcon,
+  GridViewIcon,
+  TimelineListIcon,
+} from "@hugeicons/core-free-icons";
 import { Snippet } from "@/lib/types";
 import { useSnippets } from "@/hooks/use-snippets";
 import { useFilters } from "@/hooks/use-filters";
+import { useSettingsContext } from "@/contexts/settings-context";
 import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { GlobalContextMenu } from "@/components/global-context-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface DashboardProps {
@@ -43,6 +56,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     selectedTag,
     selectedLang,
   });
+  const { settings, updateSetting } = useSettingsContext();
 
   const handleSaveSnippet = (data: Partial<Snippet>) => {
     saveSnippet(data, editingSnippet?.id);
@@ -96,6 +110,13 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     setIsSettingsOpen(true);
   };
 
+  const handleMoveSnippet = (snippetId: string, folder: string) => {
+    const snippet = snippets.find((s) => s.id === snippetId);
+    if (snippet) {
+      saveSnippet({ folder }, snippetId);
+    }
+  };
+
   const getHeaderTitle = () => {
     if (selectedFolder) return selectedFolder;
     if (selectedTag) return `#${selectedTag}`;
@@ -139,28 +160,95 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" className="shadow-sm">
-                    <HugeiconsIcon icon={LayoutIcon} strokeWidth={2} />
-                    <span className="sr-only">Grid view</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="shadow-sm opacity-50"
-                    disabled
-                  >
-                    <HugeiconsIcon icon={LayoutIcon} strokeWidth={2} />
-                    <span className="sr-only">List view</span>
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button
+                        variant={
+                          settings.viewMode === "card" ? "default" : "outline"
+                        }
+                        size="icon"
+                        className="shadow-sm"
+                        onClick={() => updateSetting("viewMode", "card")}
+                      >
+                        <HugeiconsIcon icon={CheckListIcon} strokeWidth={2} />
+                        <span className="sr-only">Card view</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Card View - Rich cards with code previews</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button
+                        variant={
+                          settings.viewMode === "list" ? "default" : "outline"
+                        }
+                        size="icon"
+                        className="shadow-sm"
+                        onClick={() => updateSetting("viewMode", "list")}
+                      >
+                        <HugeiconsIcon
+                          icon={TimelineListIcon}
+                          strokeWidth={2}
+                        />
+                        <span className="sr-only">List view</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>List View - Compact table-like layout</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button
+                        variant={
+                          settings.viewMode === "compact"
+                            ? "default"
+                            : "outline"
+                        }
+                        size="icon"
+                        className="shadow-sm"
+                        onClick={() => updateSetting("viewMode", "compact")}
+                      >
+                        <HugeiconsIcon icon={GridViewIcon} strokeWidth={2} />
+                        <span className="sr-only">Compact grid view</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Compact Grid View - Minimal cards, more snippets</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
 
               {filteredSnippets.length > 0 ? (
-                <SnippetGrid
-                  snippets={filteredSnippets}
-                  onEdit={handleEditSnippet}
-                  onDelete={deleteSnippet}
-                />
+                <>
+                  {settings.viewMode === "card" && (
+                    <SnippetGrid
+                      snippets={filteredSnippets}
+                      onEdit={handleEditSnippet}
+                      onDelete={deleteSnippet}
+                      onMove={handleMoveSnippet}
+                    />
+                  )}
+                  {settings.viewMode === "list" && (
+                    <SnippetList
+                      snippets={filteredSnippets}
+                      onEdit={handleEditSnippet}
+                      onDelete={deleteSnippet}
+                      onMove={handleMoveSnippet}
+                    />
+                  )}
+                  {settings.viewMode === "compact" && (
+                    <SnippetCompactGrid
+                      snippets={filteredSnippets}
+                      onEdit={handleEditSnippet}
+                      onDelete={deleteSnippet}
+                      onMove={handleMoveSnippet}
+                    />
+                  )}
+                </>
               ) : (
                 <EmptyState onNewSnippet={handleNewSnippet} />
               )}

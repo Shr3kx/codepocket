@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { useSettingsContext } from "@/contexts/settings-context";
+import { getTheme } from "@/lib/syntax-themes";
 import {
   vscDarkPlus,
   vs,
@@ -46,6 +48,7 @@ export function EditorModal({
   onClose,
   isOpen,
 }: EditorModalProps) {
+  const { settings } = useSettingsContext();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -302,22 +305,37 @@ export function EditorModal({
 
             <Field>
               <FieldLabel htmlFor="snippet-code">Code Content</FieldLabel>
-              <div className="relative h-[300px] rounded-md border border-border overflow-hidden bg-background">
+              <div className={cn(
+                "relative h-[300px] rounded-md border border-border overflow-hidden bg-background",
+                settings.highlightActiveLine && "highlight-active-line"
+              )}>
                 <div className="absolute inset-0 overflow-auto [&>pre]:!bg-transparent">
                   <SyntaxHighlighter
                     language={formData.language || "javascript"}
                     style={
-                      mounted && (resolvedTheme === "dark" || theme === "dark")
-                        ? vscDarkPlus
-                        : vs
+                      mounted
+                        ? resolvedTheme === "dark" || theme === "dark"
+                          ? getTheme(settings.codeThemeDark)
+                          : getTheme(settings.codeThemeLight)
+                        : getTheme(settings.codeThemeLight)
                     }
+                    showLineNumbers={settings.showLineNumbers}
+                    startingLineNumber={settings.lineNumberStart}
+                    wrapLines={settings.codeWrapping === "on" || settings.codeWrapping === "wordWrapColumn"}
+                    wrapLongLines={settings.codeWrapping === "on" || settings.codeWrapping === "wordWrapColumn"}
                     customStyle={{
                       margin: 0,
                       padding: "0.75rem",
-                      fontSize: "0.75rem",
+                      fontSize: `${settings.fontSizeCode}px`,
                       lineHeight: "1.5",
                       background: "transparent",
                       minHeight: "100%",
+                    }}
+                    lineNumberStyle={{
+                      minWidth: "3em",
+                      paddingRight: "1em",
+                      textAlign: "right",
+                      userSelect: "none",
                     }}
                     PreTag="div"
                     codeTagProps={{

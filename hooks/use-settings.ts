@@ -38,6 +38,7 @@ export interface CodePocketSettings {
   showLanguage: boolean;
   searchBehavior: "fuzzy" | "exact" | "regex";
   autoTagSuggestions: boolean;
+  viewMode: "card" | "list" | "compact";
 }
 
 const DEFAULT_SETTINGS: CodePocketSettings = {
@@ -69,6 +70,7 @@ const DEFAULT_SETTINGS: CodePocketSettings = {
   showLanguage: true,
   searchBehavior: "fuzzy",
   autoTagSuggestions: true,
+  viewMode: "card",
 };
 
 const STORAGE_KEY = "CodePocket_settings";

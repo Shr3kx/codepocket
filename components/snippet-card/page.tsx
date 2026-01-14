@@ -10,7 +10,7 @@ import {
   TagIcon,
 } from "@hugeicons/core-free-icons";
 
-import { Snippet } from "@/lib/types";
+import { Snippet, FOLDERS } from "@/lib/types";
 import { CodeBlock } from "../code-block/page";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,12 +22,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+} from "@/components/ui/context-menu";
 import { cn } from "@/lib/utils";
 
 interface SnippetCardProps {
   snippet: Snippet;
   onEdit: (snippet: Snippet) => void;
   onDelete: (id: string) => void;
+  onMove?: (snippetId: string, folder: string) => void;
   className?: string;
 }
 
@@ -35,6 +46,7 @@ export function SnippetCard({
   snippet,
   onEdit,
   onDelete,
+  onMove,
   className,
 }: SnippetCardProps) {
   return (
@@ -46,7 +58,9 @@ export function SnippetCard({
       whileHover={{ y: -4 }}
       className={cn("group", className)}
     >
-      <Card className="relative">
+      <ContextMenu>
+        <ContextMenuTrigger className="w-full">
+          <Card className="relative">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex-1 min-w-0">
@@ -112,6 +126,61 @@ export function SnippetCard({
           ))}
         </CardFooter>
       </Card>
+        </ContextMenuTrigger>
+        <ContextMenuContent className="w-56">
+          <ContextMenuItem
+            onClick={() => onEdit(snippet)}
+            className="cursor-pointer"
+          >
+            <HugeiconsIcon
+              icon={EditIcon}
+              strokeWidth={2}
+              className="mr-2 size-4"
+            />
+            Edit Snippet
+          </ContextMenuItem>
+
+          {onMove && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger className="cursor-pointer">
+                <HugeiconsIcon
+                  icon={FolderIcon}
+                  strokeWidth={2}
+                  className="mr-2 size-4"
+                />
+                Move Snippet to
+              </ContextMenuSubTrigger>
+              <ContextMenuSubContent>
+                {FOLDERS.map((folder) => (
+                  <ContextMenuItem
+                    key={folder}
+                    onClick={() => onMove(snippet.id, folder)}
+                    disabled={snippet.folder === folder}
+                    className="cursor-pointer"
+                  >
+                    {folder}
+                  </ContextMenuItem>
+                ))}
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
+
+          <ContextMenuSeparator />
+
+          <ContextMenuItem
+            onClick={() => onDelete(snippet.id)}
+            variant="destructive"
+            className="cursor-pointer"
+          >
+            <HugeiconsIcon
+              icon={DeleteIcon}
+              strokeWidth={2}
+              className="mr-2 size-4"
+            />
+            Delete Snippet
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </motion.div>
   );
 }

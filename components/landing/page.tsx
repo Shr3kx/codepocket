@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
-
+import PixelBlast from "../PixelBlast";
 interface LandingPageProps {
   onGetStarted: () => void;
   className?: string;
@@ -45,9 +45,9 @@ export function LandingPage({ onGetStarted, className }: LandingPageProps) {
         className
       )}
     >
-      {/* <div className="absolute top-10 right-10 flex items-center gap-4">
-        <ThemeToggle />
-      </div> */}
+      <div className="w-screen h-screen fixed inset-0 bg-black">
+        <PixelBlast color="#644a40" className="" style={{}} />
+      </div>
 
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
@@ -69,10 +69,12 @@ export function LandingPage({ onGetStarted, className }: LandingPageProps) {
         <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-transparent">
           CodePocket.
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground font-medium max-w-2xl mx-auto">
-          The minimal, lightning-fast code manager built for the modern
-          developer. Organize with AI, access in seconds.
-        </p>
+        {/* <div className="relative z-20 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-muted-foreground font-medium px-6 py-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+            The minimal, lightning-fast code manager built for the modern
+            developer. Organize with AI, access in seconds.
+          </p>
+        </div> */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button
             onClick={onGetStarted}
@@ -81,7 +83,7 @@ export function LandingPage({ onGetStarted, className }: LandingPageProps) {
           >
             Get Started Free
           </Button>
-          <Button variant="outline" size="lg" className="px-10 py-4 text-lg">
+          <Button variant="secondary" size="lg" className="px-10 py-4 text-lg">
             <HugeiconsIcon icon={BookIcon} strokeWidth={2} />
             Read Docs
           </Button>

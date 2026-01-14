@@ -33,6 +33,75 @@ const DEMO_SNIPPET: Snippet = {
   updatedAt: Date.now(),
 };
 
+const DEMO_SNIPPET_2: Snippet = {
+  id: "2",
+  title: "TypeScript Debounce Function",
+  description: "A reusable debounce utility function with TypeScript generics.",
+  code: `function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
+
+  return function executedFunction(...args: Parameters<T>) {
+    const later = () => {
+      timeout = null;
+      func(...args);
+    };
+
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Usage
+const debouncedSearch = debounce((query: string) => {
+  console.log("Searching for:", query);
+}, 300);`,
+  language: "typescript",
+  tags: ["typescript", "utility", "performance"],
+  folder: "Work",
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+};
+
+const DEMO_SNIPPET_3: Snippet = {
+  id: "3",
+  title: "Python Context Manager",
+  description: "A custom context manager for file operations with error handling.",
+  code: `from contextlib import contextmanager
+from typing import Generator
+
+@contextmanager
+def safe_file_operation(filepath: str, mode: str = 'r') -> Generator:
+    """Context manager for safe file operations."""
+    file = None
+    try:
+        file = open(filepath, mode)
+        yield file
+    except FileNotFoundError:
+        print(f"File {filepath} not found")
+        raise
+    except IOError as e:
+        print(f"IO error: {e}")
+        raise
+    finally:
+        if file:
+            file.close()
+
+# Usage
+with safe_file_operation('data.txt', 'r') as f:
+    content = f.read()
+    print(content)`,
+  language: "python",
+  tags: ["python", "context-manager", "file-handling"],
+  folder: "Learning",
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+};
+
 export function useSnippets() {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
 
@@ -42,12 +111,18 @@ export function useSnippets() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         try {
-          setSnippets(JSON.parse(saved));
+          const parsed = JSON.parse(saved);
+          // If parsed data is empty array or invalid, use demo snippets
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setSnippets(parsed);
+          } else {
+            setSnippets([DEMO_SNIPPET, DEMO_SNIPPET_2, DEMO_SNIPPET_3]);
+          }
         } catch {
-          setSnippets([DEMO_SNIPPET]);
+          setSnippets([DEMO_SNIPPET, DEMO_SNIPPET_2, DEMO_SNIPPET_3]);
         }
       } else {
-        setSnippets([DEMO_SNIPPET]);
+        setSnippets([DEMO_SNIPPET, DEMO_SNIPPET_2, DEMO_SNIPPET_3]);
       }
     }
   }, []);

@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
 
 import { cn } from "@/lib/utils"
@@ -25,8 +26,51 @@ function Tooltip({ ...props }: TooltipPrimitive.Root.Props) {
   )
 }
 
-function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+function TooltipTrigger({ asChild, children, ...props }: TooltipPrimitive.Trigger.Props & { asChild?: boolean }) {
+  if (asChild && children) {
+    // Clone the child element and merge tooltip props with existing props
+    return (
+      <TooltipPrimitive.Trigger
+        data-slot="tooltip-trigger"
+        render={(triggerProps) => {
+          if (React.isValidElement(children)) {
+            const childProps = (children as React.ReactElement).props;
+            // Merge onClick handlers - call both the tooltip's and the child's
+            const mergedProps = {
+              ...childProps,
+              ...triggerProps,
+              onClick: (e: React.MouseEvent) => {
+                // Call child's onClick first
+                if (childProps.onClick) {
+                  childProps.onClick(e);
+                }
+                // Then call tooltip's onClick if it exists
+                if (triggerProps.onClick) {
+                  triggerProps.onClick(e);
+                }
+              },
+            };
+            return React.cloneElement(children as React.ReactElement, mergedProps);
+          }
+          return <div {...triggerProps}>{children}</div>;
+        }}
+        {...props}
+      />
+    );
+  }
+  // Always wrap children in a span so TooltipTrigger renders as span instead of button
+  // This prevents nested button issues when TooltipTrigger wraps a Button component
+  return (
+    <TooltipPrimitive.Trigger
+      data-slot="tooltip-trigger"
+      render={(triggerProps) => (
+        <span {...triggerProps} className="inline-block">
+          {children}
+        </span>
+      )}
+      {...props}
+    />
+  );
 }
 
 function TooltipContent({
