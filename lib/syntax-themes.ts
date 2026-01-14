@@ -5,15 +5,11 @@ export type ThemeName =
   | "vs"
   | "vscDarkPlus"
   | "dracula"
-  | "atomOneDark"
-  | "atomOneLight"
-  | "github"
   | "nightOwl"
   | "oneDark"
   | "oneLight"
   | "shadesOfPurple"
   | "synthwave84"
-  | "tokyoNight"
   | "coldarkDark"
   | "coldarkCold"
   | "materialDark"
@@ -28,15 +24,12 @@ const themeMap: Record<string, any> = {
   vs: themes.vs,
   vscDarkPlus: themes.vscDarkPlus,
   dracula: themes.dracula,
-  atomOneDark: themes.atomOneDark,
-  atomOneLight: themes.atomOneLight,
-  github: themes.github,
+
   nightOwl: themes.nightOwl,
   oneDark: themes.oneDark,
   oneLight: themes.oneLight,
   shadesOfPurple: themes.shadesOfPurple,
   synthwave84: themes.synthwave84,
-  tokyoNight: themes.tokyoNight,
   coldarkDark: themes.coldarkDark,
   coldarkCold: themes.coldarkCold,
   materialDark: themes.materialDark,
