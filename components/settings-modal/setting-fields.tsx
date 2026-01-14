@@ -58,8 +58,14 @@ export function SelectField({
   options,
   className,
 }: SelectFieldProps) {
+  const handleValueChange = (newValue: string | null, _eventDetails?: unknown) => {
+    if (newValue !== null) {
+      onValueChange(newValue);
+    }
+  };
+
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={value} onValueChange={handleValueChange}>
       <SelectTrigger className={className || SELECT_INPUT_WIDTH}>
         <SelectValue />
       </SelectTrigger>
