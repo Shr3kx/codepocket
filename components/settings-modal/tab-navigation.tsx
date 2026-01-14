@@ -16,7 +16,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
     <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border/40 bg-muted/20 flex-shrink-0 overflow-hidden">
       <nav className="p-2 md:p-3 h-full">
         <div className="flex md:flex-col gap-1 overflow-x-auto md:overflow-x-visible md:overflow-y-auto">
-          {TABS.map((tab) => {
+          {TABS.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (

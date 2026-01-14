@@ -343,7 +343,10 @@
 }
 
 /* Highlight line on hover - works with wrapLines enabled */
-.highlight-active-line pre[class*="language-"] code span[class*="token-line"]:hover {
+.highlight-active-line
+  pre[class*="language-"]
+  code
+  span[class*="token-line"]:hover {
   background-color: rgba(0, 0, 0, 0.05);
   display: block;
   margin-left: -0.75rem;
@@ -352,7 +355,11 @@
   padding-right: 0.75rem;
 }
 
-.dark .highlight-active-line pre[class*="language-"] code span[class*="token-line"]:hover {
+.dark
+  .highlight-active-line
+  pre[class*="language-"]
+  code
+  span[class*="token-line"]:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -361,6 +368,9 @@
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.dark .highlight-active-line pre[class*="language-"] span[class*="linenumber"]:hover {
+.dark
+  .highlight-active-line
+  pre[class*="language-"]
+  span[class*="linenumber"]:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }

@@ -45,7 +45,7 @@ export function LandingPage({ onGetStarted, className }: LandingPageProps) {
         className
       )}
     >
-      <div className="w-screen h-screen fixed inset-0 bg-black">
+      <div className="w-screen h-screen fixed inset-0 ">
         <PixelBlast color="#644a40" className="" style={{}} />
       </div>
 
