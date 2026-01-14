@@ -24,7 +24,6 @@ const themeMap: Record<string, any> = {
   vs: themes.vs,
   vscDarkPlus: themes.vscDarkPlus,
   dracula: themes.dracula,
-
   nightOwl: themes.nightOwl,
   oneDark: themes.oneDark,
   oneLight: themes.oneLight,
