@@ -48,7 +48,7 @@ interface SelectFieldOption {
 interface SelectFieldProps {
   value: string;
   onValueChange: (value: string) => void;
-  options: SelectFieldOption[];
+  options: readonly Readonly<SelectFieldOption>[];
   className?: string;
 }
 
