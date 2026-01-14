@@ -34,15 +34,17 @@ function TooltipTrigger({ asChild, children, ...props }: TooltipPrimitive.Trigge
         data-slot="tooltip-trigger"
         render={(triggerProps) => {
           if (React.isValidElement(children)) {
-            const childProps = (children as React.ReactElement).props;
+            const childElement = children as React.ReactElement;
+            const childProps = childElement.props as Record<string, unknown>;
+            const childOnClick = childProps.onClick as ((e: React.MouseEvent) => void) | undefined;
             // Merge onClick handlers - call both the tooltip's and the child's
             const mergedProps = {
               ...childProps,
               ...triggerProps,
               onClick: (e: React.MouseEvent) => {
                 // Call child's onClick first
-                if (childProps.onClick) {
-                  childProps.onClick(e);
+                if (childOnClick) {
+                  childOnClick(e);
                 }
                 // Then call tooltip's onClick if it exists
                 if (triggerProps.onClick) {
@@ -50,7 +52,7 @@ function TooltipTrigger({ asChild, children, ...props }: TooltipPrimitive.Trigge
                 }
               },
             };
-            return React.cloneElement(children as React.ReactElement, mergedProps);
+            return React.cloneElement(childElement, mergedProps);
           }
           return <div {...triggerProps}>{children}</div>;
         }}
