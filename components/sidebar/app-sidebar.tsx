@@ -39,8 +39,6 @@ import { Button } from "@/components/ui/button";
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   selectedFolder?: string | null;
   onFolderSelect?: (folder: string | null) => void;
-  selectedLang?: string | null;
-  onLangSelect?: (lang: string | null) => void;
   selectedTag?: string | null;
   onTagSelect?: (tag: string | null) => void;
   allTags?: string[];
@@ -50,8 +48,6 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 export function AppSidebar({
   selectedFolder = null,
   onFolderSelect,
-  selectedLang = null,
-  onLangSelect,
   selectedTag = null,
   onTagSelect,
   allTags = [],
@@ -60,26 +56,18 @@ export function AppSidebar({
 }: AppSidebarProps) {
   // Fallback local state so the sidebar can operate standalone
   const [fallbackFolder, setFallbackFolder] = React.useState<string | null>(
-    selectedFolder
-  );
-  const [fallbackLang, setFallbackLang] = React.useState<string | null>(
-    selectedLang
+    selectedFolder,
   );
   const [fallbackTag, setFallbackTag] = React.useState<string | null>(
-    selectedTag
+    selectedTag,
   );
 
   const effectiveFolder = onFolderSelect ? selectedFolder : fallbackFolder;
-  const effectiveLang = onLangSelect ? selectedLang : fallbackLang;
   const effectiveTag = onTagSelect ? selectedTag : fallbackTag;
 
   const handleFolder = (folder: string | null) => {
     setFallbackFolder(folder);
     onFolderSelect?.(folder);
-  };
-  const handleLang = (lang: string | null) => {
-    setFallbackLang(lang);
-    onLangSelect?.(lang);
   };
   const handleTag = (tag: string | null) => {
     setFallbackTag(tag);
@@ -269,7 +257,7 @@ export function AppSidebar({
         }
 
         {/* Languages Section */}
-        {
+        {false && (
           <SidebarGroup>
             <SidebarGroupLabel className="flex items-center gap-2">
               <HugeiconsIcon
@@ -301,7 +289,7 @@ export function AppSidebar({
               ))}
             </div>
           </SidebarGroup>
-        }
+        )}
 
         {/* Tags Section */}
         {allTags.length > 0 && (

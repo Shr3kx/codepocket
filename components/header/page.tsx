@@ -99,7 +99,7 @@ export function Header({
         snippet.title.toLowerCase().includes(query) ||
         snippet.description.toLowerCase().includes(query) ||
         snippet.language.toLowerCase().includes(query) ||
-        snippet.folder.toLowerCase().includes(query)
+        snippet.folder.toLowerCase().includes(query),
     );
   }, [searchQuery]);
 
@@ -120,7 +120,7 @@ export function Header({
       <header
         className={cn(
           "flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/80 backdrop-blur-md px-4",
-          className
+          className,
         )}
       >
         <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export function Header({
             <Button
               variant="outline"
               className={cn(
-                "w-full justify-start text-muted-foreground h-7 bg-input/20 dark:bg-input/30 border-input hover:bg-input/40"
+                "w-full justify-start text-muted-foreground h-7 bg-input/20 dark:bg-input/30 border-input hover:bg-input/40",
               )}
               onClick={() => setOpen(true)}
             >
@@ -156,10 +156,6 @@ export function Header({
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button variant="ghost" size="icon">
-            <HugeiconsIcon icon={SettingsIcon} strokeWidth={2} />
-            <span className="sr-only">Settings</span>
-          </Button>
           <Button
             onClick={onNewSnippet}
             className="hidden sm:flex items-center gap-2"

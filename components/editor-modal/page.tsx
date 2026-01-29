@@ -106,7 +106,7 @@ export function EditorModal({
       // Placeholder for now
       await new Promise(resolve => setTimeout(resolve, 500));
       alert(
-        "AI optimization feature is not yet configured. Please set up the API key."
+        "AI optimization feature is not yet configured. Please set up the API key.",
       );
     } catch (error) {
       console.error("AI optimization error:", error);
@@ -161,7 +161,7 @@ export function EditorModal({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           onClick={e => e.stopPropagation()}
           className={cn(
-            "ring-foreground/10 bg-background text-foreground relative w-full max-w-4xl rounded-xl shadow-2xl border border-border ring-1 overflow-hidden flex flex-col max-h-[90vh]"
+            "ring-foreground/10 bg-background text-foreground relative w-full max-w-4xl rounded-xl shadow-2xl border border-border ring-1 overflow-hidden flex flex-col max-h-[90vh]",
           )}
         >
           <div className="flex items-center justify-between p-6 border-b border-border">
@@ -172,9 +172,13 @@ export function EditorModal({
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="size-7"
+              className="size-7 cursor-pointer"
             >
-              <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                strokeWidth={2}
+                className="size-4"
+              />
               <span className="sr-only">Close</span>
             </Button>
           </div>
@@ -276,7 +280,7 @@ export function EditorModal({
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="snippet-tags">Tags</FieldLabel>
-                  <div className="flex flex-wrap gap-2 p-2 border border-border rounded-md bg-input/20 dark:bg-input/30 min-h-7">
+                  <div className="flex flex-wrap gap-2 p-2 border border-border rounded-md bg-input/20 dark:bg-input/30 min-h-5">
                     {formData.tags?.map(tag => (
                       <Badge key={tag} variant="secondary" className="gap-1">
                         {tag}
@@ -295,7 +299,7 @@ export function EditorModal({
                       value={tagInput}
                       onChange={e => setTagInput(e.target.value)}
                       onKeyDown={handleAddTag}
-                      className="bg-transparent border-0 focus-visible:ring-0 h-auto p-0 text-xs min-w-[80px] flex-1"
+                      className="bg-transparent border-0 focus-visible:ring-0 h-auto p-0 text-xs min-w-20 flex-1"
                       placeholder="Add tag..."
                     />
                   </div>
@@ -390,11 +394,11 @@ export function EditorModal({
               <div
                 className={cn(
                   "relative h-[300px] rounded-md border border-border overflow-hidden bg-background",
-                  settings.highlightActiveLine && "highlight-active-line"
+                  settings.highlightActiveLine && "highlight-active-line",
                 )}
               >
                 {/* Syntax Highlight Layer */}
-                <div className="absolute inset-0 overflow-auto pointer-events-none [&>pre]:!bg-transparent">
+                <div className="absolute inset-0 overflow-auto pointer-events-none [&>pre]:!bg-transparent!">
                   <SyntaxHighlighter
                     language={formData.language || "javascript"}
                     style={
@@ -450,7 +454,7 @@ export function EditorModal({
                   onScroll={e => {
                     const target = e.target as HTMLTextAreaElement;
                     const highlightDiv = target.parentElement?.querySelector(
-                      'div[class*="overflow-auto"]'
+                      'div[class*="overflow-auto"]',
                     ) as HTMLElement;
                     if (highlightDiv) {
                       highlightDiv.scrollTop = target.scrollTop;
@@ -475,10 +479,14 @@ export function EditorModal({
           </div>
 
           <div className="p-6 border-t border-border flex justify-end gap-3">
-            <Button variant="outline" onClick={onClose}>
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
-            <Button onClick={() => onSave(formData)}>
+            <Button onClick={() => onSave(formData)} className="cursor-pointer">
               <HugeiconsIcon icon={FloppyDiskIcon} strokeWidth={2} />
               Save Snippet
             </Button>

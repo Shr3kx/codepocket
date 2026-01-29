@@ -53,7 +53,9 @@ export function CodeBlock({
   };
 
   // Determine wrap lines based on codeWrapping setting
-  const wrapLines = settings.codeWrapping === "on" || settings.codeWrapping === "wordWrapColumn";
+  const wrapLines =
+    settings.codeWrapping === "on" ||
+    settings.codeWrapping === "wordWrapColumn";
 
   return (
     <div
@@ -61,7 +63,7 @@ export function CodeBlock({
       className={cn(
         "ring-foreground/10 bg-card text-card-foreground overflow-hidden rounded-lg border border-border ring-1 relative group",
         settings.highlightActiveLine && "highlight-active-line",
-        className
+        className,
       )}
     >
       <Button

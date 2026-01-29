@@ -18,7 +18,7 @@ import {
   GridViewIcon,
   TimelineListIcon,
 } from "@hugeicons/core-free-icons";
-import { Snippet } from "@/lib/types";
+import { Snippet, LANGUAGES } from "@/lib/types";
 import { useSnippets } from "@/hooks/use-snippets";
 import { useFilters } from "@/hooks/use-filters";
 import { useSettingsContext } from "@/contexts/settings-context";
@@ -33,6 +33,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { LanguageFilter } from "./language-filter";
 import { cn } from "@/lib/utils";
 
 interface DashboardProps {
@@ -44,7 +45,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [selectedLang, setSelectedLang] = useState<string | null>(null);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -54,7 +55,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     searchQuery,
     selectedFolder,
     selectedTag,
-    selectedLang,
+    selectedLanguages,
   });
   const { settings, updateSetting } = useSettingsContext();
 
@@ -79,7 +80,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     if (snippets.length > 0) {
       // Sort by updatedAt descending and get the most recently saved
       const lastSaved = [...snippets].sort(
-        (a, b) => b.updatedAt - a.updatedAt
+        (a, b) => b.updatedAt - a.updatedAt,
       )[0];
       if (lastSaved) {
         handleEditSnippet(lastSaved);
@@ -92,7 +93,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     if (snippets.length > 0) {
       // Get the most recently created snippet
       const lastAdded = [...snippets].sort(
-        (a, b) => b.createdAt - a.createdAt
+        (a, b) => b.createdAt - a.createdAt,
       )[0];
       if (lastAdded?.code) {
         try {
@@ -111,7 +112,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
   };
 
   const handleMoveSnippet = (snippetId: string, folder: string) => {
-    const snippet = snippets.find((s) => s.id === snippetId);
+    const snippet = snippets.find(s => s.id === snippetId);
     if (snippet) {
       saveSnippet({ folder }, snippetId);
     }
@@ -136,8 +137,6 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
         <AppSidebar
           selectedFolder={selectedFolder}
           onFolderSelect={setSelectedFolder}
-          selectedLang={selectedLang}
-          onLangSelect={setSelectedLang}
           selectedTag={selectedTag}
           onTagSelect={setSelectedTag}
           allTags={allTags}
@@ -219,6 +218,12 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                       <p>Compact Grid View - Minimal cards, more snippets</p>
                     </TooltipContent>
                   </Tooltip>
+                  <LanguageFilter
+                    languages={LANGUAGES as unknown as string[]}
+                    selectedLanguages={selectedLanguages}
+                    onLanguageChange={setSelectedLanguages}
+                    tooltip="Filter by language"
+                  />
                 </div>
               </div>
 

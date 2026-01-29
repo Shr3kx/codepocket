@@ -100,13 +100,13 @@ export function SnippetCard({
             </CardHeader>
 
             <CardContent>
-              <p className="text-xs/relaxed text-muted-foreground mb-4 line-clamp-2 min-h-[40px]">
+              <p className="text-xs/relaxed text-muted-foreground mb-4 line-clamp-2 min-h-10">
                 {snippet.description || "No description provided."}
               </p>
 
-              <div className="relative mb-4 max-h-[160px] overflow-hidden rounded-lg">
+              <div className="relative mb-4 max-h-30 overflow-hidden rounded-lg">
                 <CodeBlock code={snippet.code} language={snippet.language} />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/5 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-t from-background/5 to-transparent pointer-events-none" />
               </div>
             </CardContent>
 
