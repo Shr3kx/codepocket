@@ -119,7 +119,7 @@ export function Header({
     <>
       <header
         className={cn(
-          "flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/80 backdrop-blur-md px-4",
+          "flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background/80 backdrop-blur-md px-4 ",
           className,
         )}
       >
@@ -158,6 +158,7 @@ export function Header({
           <ThemeToggle />
           <Button
             onClick={onNewSnippet}
+            size="lg"
             className="hidden sm:flex items-center gap-2"
           >
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />

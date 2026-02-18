@@ -18,10 +18,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useSettingsContext } from "@/contexts/settings-context";
 import { getTheme } from "@/lib/syntax-themes";
-import {
-  vscDarkPlus,
-  vs,
-} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useTheme } from "next-themes";
 import {
   Select,
@@ -114,7 +110,7 @@ export function EditorModal({
       setIsAiLoading(false);
     }
   };
-
+  //TODO: Implement AI preview of the code that user writes
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
@@ -144,6 +140,36 @@ export function EditorModal({
     label: folder,
     value: folder,
   }));
+
+  const isDarkMode = mounted
+    ? resolvedTheme === "dark" || theme === "dark"
+    : false;
+  const selectedSyntaxTheme = (
+    isDarkMode
+      ? getTheme(settings.codeThemeDark)
+      : getTheme(settings.codeThemeLight)
+  ) as Record<string, React.CSSProperties>;
+
+  const getThemeSurface = (): string => {
+    const surfaceKeys = [
+      'pre[class*="language-"]',
+      "pre[class*='language-']",
+      'code[class*="language-"]',
+      "code[class*='language-']",
+    ];
+
+    for (const key of surfaceKeys) {
+      const style = selectedSyntaxTheme[key];
+      const color = style?.backgroundColor ?? style?.background;
+      if (typeof color === "string") {
+        return color;
+      }
+    }
+
+    return "transparent";
+  };
+
+  const editorCodeBackground = getThemeSurface();
 
   return (
     <AnimatePresence>
@@ -307,107 +333,21 @@ export function EditorModal({
               </div>
             </div>
 
-            {/* <Field>
-              <FieldLabel htmlFor="snippet-code">Code Content</FieldLabel>
-              <div className={cn(
-                "relative h-[300px] rounded-md border border-border overflow-hidden bg-background",
-                settings.highlightActiveLine && "highlight-active-line"
-              )}>
-                <div className="absolute inset-0 overflow-auto [&>pre]:!bg-transparent">
-                  <SyntaxHighlighter
-                    language={formData.language || "javascript"}
-                    style={
-                      mounted
-                        ? resolvedTheme === "dark" || theme === "dark"
-                          ? getTheme(settings.codeThemeDark)
-                          : getTheme(settings.codeThemeLight)
-                        : getTheme(settings.codeThemeLight)
-                    }
-                    showLineNumbers={settings.showLineNumbers}
-                    startingLineNumber={settings.lineNumberStart}
-                    wrapLines={settings.codeWrapping === "on" || settings.codeWrapping === "wordWrapColumn"}
-                    wrapLongLines={settings.codeWrapping === "on" || settings.codeWrapping === "wordWrapColumn"}
-                    customStyle={{
-                      margin: 0,
-                      padding: "0.75rem",
-                      fontSize: `${settings.fontSizeCode}px`,
-                      lineHeight: "1.5",
-                      background: "transparent",
-                      minHeight: "100%",
-                    }}
-                    lineNumberStyle={{
-                      minWidth: "3em",
-                      paddingRight: "1em",
-                      textAlign: "right",
-                      userSelect: "none",
-                    }}
-                    PreTag="div"
-                    codeTagProps={{
-                      style: {
-                        fontFamily:
-                          "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-                      },
-                    }}
-                  >
-                    {formData.code || " "}
-                  </SyntaxHighlighter>
-                </div>
-                <Textarea
-                  id="snippet-code"
-                  value={formData.code}
-                  onChange={e =>
-                    setFormData({ ...formData, code: e.target.value })
-                  }
-                  onScroll={e => {
-                    const target = e.target as HTMLTextAreaElement;
-                    const highlightDiv = target.parentElement?.querySelector(
-                      'div[class*="overflow-auto"]'
-                    ) as HTMLElement;
-                    if (highlightDiv) {
-                      highlightDiv.scrollTop = target.scrollTop;
-                      highlightDiv.scrollLeft = target.scrollLeft;
-                    }
-                  }}
-                  className="relative h-full w-full font-mono text-xs bg-transparent text-transparent caret-foreground resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-transparent !p-0"
-                  placeholder="Paste your code here..."
-                  style={{
-                    color: "transparent",
-                    WebkitTextFillColor: "transparent",
-                    fontFamily:
-                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-                    fontSize: `${settings.fontSizeCode}px`,
-                    lineHeight: "1.5",
-                    paddingTop: "0.75rem",
-                    paddingRight: "0.75rem",
-                    paddingBottom: "0.75rem",
-                    paddingLeft: settings.showLineNumbers
-                      ? `calc(0.75rem + 4em)`
-                      : "0.75rem",
-                  }}
-                />
-              </div>
-            </Field> */}
-
             <Field>
               <FieldLabel htmlFor="snippet-code">Code Content</FieldLabel>
 
               <div
                 className={cn(
-                  "relative h-[300px] rounded-md border border-border overflow-hidden bg-background",
+                  "relative h-75 rounded-md border border-border overflow-hidden",
                   settings.highlightActiveLine && "highlight-active-line",
                 )}
+                style={{ backgroundColor: editorCodeBackground }}
               >
                 {/* Syntax Highlight Layer */}
-                <div className="absolute inset-0 overflow-auto pointer-events-none [&>pre]:!bg-transparent!">
+                <div className="absolute inset-0 overflow-auto pointer-events-none [&>pre]:!bg-transparent! ">
                   <SyntaxHighlighter
                     language={formData.language || "javascript"}
-                    style={
-                      mounted
-                        ? resolvedTheme === "dark" || theme === "dark"
-                          ? getTheme(settings.codeThemeDark)
-                          : getTheme(settings.codeThemeLight)
-                        : getTheme(settings.codeThemeLight)
-                    }
+                    style={selectedSyntaxTheme}
                     showLineNumbers={settings.showLineNumbers}
                     startingLineNumber={settings.lineNumberStart}
                     wrapLines={
@@ -420,15 +360,20 @@ export function EditorModal({
                     }
                     customStyle={{
                       margin: 0,
-                      padding: "0.75rem",
+                      padding: 0,
+                      paddingTop: "0.75rem",
+                      paddingBottom: "0.75rem",
+                      paddingLeft: settings.showLineNumbers ? 0 : "0.75rem",
+                      paddingRight: "0.75rem",
                       fontSize: `${settings.fontSizeCode}px`,
                       lineHeight: "1.5",
-                      background: "transparent",
+                      backgroundColor: editorCodeBackground,
                       minHeight: "100%",
                     }}
                     lineNumberStyle={{
-                      minWidth: "3.5em",
-                      paddingRight: "1em",
+                      minWidth: "3.75em",
+                      paddingRight: "0.75em",
+                      paddingLeft: "0.75rem",
                       textAlign: "right",
                       userSelect: "none",
                     }}
@@ -447,6 +392,7 @@ export function EditorModal({
                 {/* Textarea Input Layer */}
                 <Textarea
                   id="snippet-code"
+                  spellCheck="false"
                   value={formData.code}
                   onChange={e =>
                     setFormData({ ...formData, code: e.target.value })
@@ -461,7 +407,7 @@ export function EditorModal({
                       highlightDiv.scrollLeft = target.scrollLeft;
                     }
                   }}
-                  className="relative h-full w-full font-mono text-xs bg-transparent text-transparent caret-foreground resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-transparent"
+                  className="relative h-full w-full font-mono text-xs bg-transparent selection:bg-[#644a40]/30 text-transparent caret-foreground resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-transparent"
                   placeholder="Paste your code here..."
                   style={{
                     color: "transparent",
@@ -470,8 +416,14 @@ export function EditorModal({
                       "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
                     fontSize: `${settings.fontSizeCode}px`,
                     lineHeight: "1.5",
-                    padding: "0.75rem",
-                    paddingLeft: settings.showLineNumbers ? "4.5em" : "0.75rem",
+                    padding: 0,
+                    paddingTop: "0.75rem",
+                    paddingBottom: "0.75rem",
+                    paddingLeft: settings.showLineNumbers
+                      ? "calc(0.75rem + 4.5em)"
+                      : "0.75rem",
+                    paddingRight: "0.75rem",
+                    boxSizing: "border-box",
                   }}
                 />
               </div>

@@ -11,9 +11,9 @@ import {
   BookIcon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import PixelBlast from "../PixelBlast";
+import { ThemeToggle } from "../theme-toggle";
 interface LandingPageProps {
   onGetStarted: () => void;
   className?: string;
@@ -41,8 +41,8 @@ export function LandingPage({ onGetStarted, className }: LandingPageProps) {
   return (
     <div
       className={cn(
-        "min-h-screen flex flex-col items-center justify-center p-6 bg-background text-foreground overflow-hidden relative",
-        className
+        "min-h-screen flex flex-col items-center justify-center p-6 dark:bg-background bg-neutral-100 text-foreground overflow-hidden relative",
+        className,
       )}
     >
       <div className="w-screen h-screen fixed inset-0 ">
@@ -66,26 +66,17 @@ export function LandingPage({ onGetStarted, className }: LandingPageProps) {
             />
           </div>
         </div>
-        <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-transparent">
-          CodePocket.
+        <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none bg-linear-to-b dark:from-foreground from-black to-muted-foreground bg-clip-text text-transparent">
+          CodePocket
         </h1>
-        {/* <div className="relative z-20 max-w-2xl mx-auto">
-          <p className="text-xl md:text-2xl text-muted-foreground font-medium px-6 py-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-            The minimal, lightning-fast code manager built for the modern
-            developer. Organize with AI, access in seconds.
-          </p>
-        </div> */}
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button
             onClick={onGetStarted}
             size="lg"
-            className="px-10 py-4 text-lg"
+            className="px-10 py-4 text-lg rounded-mg cursor-pointer "
           >
             Get Started Free
-          </Button>
-          <Button variant="secondary" size="lg" className="px-10 py-4 text-lg">
-            <HugeiconsIcon icon={BookIcon} strokeWidth={2} />
-            Read Docs
           </Button>
         </div>
 

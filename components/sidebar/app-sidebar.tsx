@@ -74,130 +74,6 @@ export function AppSidebar({
     onTagSelect?.(tag);
   };
 
-  const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
-    },
-    navMain: [
-      {
-        title: "Playground",
-        url: "#",
-        icon: Terminal,
-        isActive: true,
-        items: [
-          {
-            title: "History",
-            url: "#",
-          },
-          {
-            title: "Starred",
-            url: "#",
-          },
-          {
-            title: "Settings",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Models",
-        url: "#",
-        icon: AiMagicIcon,
-        items: [
-          {
-            title: "Genesis",
-            url: "#",
-          },
-          {
-            title: "Explorer",
-            url: "#",
-          },
-          {
-            title: "Quantum",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Documentation",
-        url: "#",
-        icon: BookIcon,
-        items: [
-          {
-            title: "Introduction",
-            url: "#",
-          },
-          {
-            title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Settings",
-        url: "#",
-        icon: SettingsIcon,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
-        ],
-      },
-    ],
-    navSecondary: [
-      {
-        title: "Support",
-        url: "#",
-        icon: HelpCircleIcon,
-      },
-      {
-        title: "Feedback",
-        url: "#",
-        icon: SentIcon,
-      },
-    ],
-    projects: [
-      {
-        name: "Design Engineering",
-        url: "#",
-        icon: LayoutIcon,
-      },
-      {
-        name: "Sales & Marketing",
-        url: "#",
-        icon: ChartIcon,
-      },
-      {
-        name: "Travel",
-        url: "#",
-        icon: MapsIcon,
-      },
-    ],
-  };
-
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -256,41 +132,6 @@ export function AppSidebar({
           </SidebarGroup>
         }
 
-        {/* Languages Section */}
-        {false && (
-          <SidebarGroup>
-            <SidebarGroupLabel className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={CodeIcon}
-                strokeWidth={2}
-                className="size-3"
-              />
-              Languages
-            </SidebarGroupLabel>
-            <div className="flex flex-wrap gap-1 px-2 pb-2">
-              <Button
-                variant={!effectiveLang ? "default" : "outline"}
-                size="xs"
-                onClick={() => handleLang(null)}
-                className="text-xs"
-              >
-                All
-              </Button>
-              {LANGUAGES.slice(0, 8).map(lang => (
-                <Button
-                  key={lang}
-                  variant={effectiveLang === lang ? "default" : "outline"}
-                  size="xs"
-                  onClick={() => handleLang(lang)}
-                  className="text-xs capitalize"
-                >
-                  {lang}
-                </Button>
-              ))}
-            </div>
-          </SidebarGroup>
-        )}
-
         {/* Tags Section */}
         {allTags.length > 0 && (
           <SidebarGroup>
@@ -337,7 +178,6 @@ export function AppSidebar({
             </SidebarMenuItem>
           </SidebarMenu>
         )}
-        <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   );

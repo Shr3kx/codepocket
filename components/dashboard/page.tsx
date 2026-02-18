@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Header } from "@/components/header/page";
 import { SnippetGrid } from "@/components/snippet-grid/page";
@@ -35,12 +35,14 @@ import {
 } from "@/components/ui/tooltip";
 import { LanguageFilter } from "./language-filter";
 import { cn } from "@/lib/utils";
+import { BreadcrumbSeparator } from "../ui/breadcrumb";
+import { Separator } from "../ui/separator";
 
 interface DashboardProps {
   onSignOut: () => void;
   className?: string;
 }
-
+import { toast } from "sonner";
 export function Dashboard({ onSignOut, className }: DashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -74,6 +76,26 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     setEditingSnippet(null);
     setIsEditorOpen(true);
   };
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isCtrlOrCmd = event.ctrlKey || event.metaKey;
+      const isNKey = event.key.toLowerCase() === "n";
+
+      console.log({ isCtrlOrCmd, isNKey, key: event.key });
+
+      if (isCtrlOrCmd && isNKey) {
+        event.preventDefault();
+        event.stopPropagation();
+        setEditingSnippet(null);
+        setIsEditorOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, []);
 
   const handleOpenLastSavedSnippet = () => {
     // TODO: Implement open last saved snippet functionality
@@ -158,7 +180,20 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                     {filteredSnippets.length} snippets found
                   </p>
                 </div>
+                <div>
+                  <button onClick={() => toast("My first toast")}>
+                    toast check
+                  </button>
+                </div>
                 <div className="flex gap-2">
+                  <LanguageFilter
+                    languages={LANGUAGES as unknown as string[]}
+                    selectedLanguages={selectedLanguages}
+                    onLanguageChange={setSelectedLanguages}
+                    tooltip="Filter by language"
+                  />
+                  <Separator orientation="vertical" />
+
                   <Tooltip>
                     <TooltipTrigger>
                       <Button
@@ -218,12 +253,6 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                       <p>Compact Grid View - Minimal cards, more snippets</p>
                     </TooltipContent>
                   </Tooltip>
-                  <LanguageFilter
-                    languages={LANGUAGES as unknown as string[]}
-                    selectedLanguages={selectedLanguages}
-                    onLanguageChange={setSelectedLanguages}
-                    tooltip="Filter by language"
-                  />
                 </div>
               </div>
 

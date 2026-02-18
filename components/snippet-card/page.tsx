@@ -33,6 +33,7 @@ import {
   ContextMenuSubTrigger,
 } from "@/components/ui/context-menu";
 import { cn } from "@/lib/utils";
+import { CodeFrame } from "../ui/codeBlockFrame";
 
 interface SnippetCardProps {
   snippet: Snippet;
@@ -60,9 +61,9 @@ export function SnippetCard({
     >
       <ContextMenu>
         <ContextMenuTrigger className="w-full">
-          <Card className="relative">
+          <Card className="relative bg-primary/5 ">
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start ">
                 <div className="flex-1 min-w-0">
                   <CardTitle className="truncate max-w-50">
                     {snippet.title}
@@ -105,7 +106,10 @@ export function SnippetCard({
               </p>
 
               <div className="relative mb-4 max-h-30 overflow-hidden rounded-lg">
-                <CodeBlock code={snippet.code} language={snippet.language} />
+                <CodeFrame code={snippet.code} language="js">
+                  <CodeBlock code={snippet.code} language={snippet.language} />
+                </CodeFrame>
+                {/* */}
                 <div className="absolute inset-0 bg-linear-to-t from-background/5 to-transparent pointer-events-none" />
               </div>
             </CardContent>
