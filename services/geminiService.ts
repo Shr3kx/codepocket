@@ -12,38 +12,7 @@ export async function explainCode(code: string, language: string) {
       },
     });
 
-    // Debug logging
-    console.log(
-      "[explainCode] Full response:",
-      JSON.stringify(response, null, 2),
-    );
-
-    // Try multiple ways to extract text
-    let text = null;
-
-    // Method 1: Check if response has a text method
-    if (typeof response.text === "function") {
-      text = await response.text();
-    }
-    // Method 2: Check candidates array
-    else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
-      text = response.candidates[0].content.parts[0].text;
-    }
-    // Method 3: Direct text property
-    else if (response.text) {
-      text = response.text;
-    }
-    // Method 4: response.response.text()
-    else if (
-      response.response &&
-      typeof response.response.text === "function"
-    ) {
-      text = await response.response.text();
-    }
-
-    console.log("[explainCode] Extracted text:", text);
-
-    return text || "Error generating explanation.";
+    return response.text || "Error generating explanation.";
   } catch (error) {
     console.error("Gemini Error:", error);
     return "Error generating explanation.";
@@ -64,23 +33,7 @@ export async function suggestTags(code: string) {
       },
     });
 
-    // Try multiple ways to extract text
-    let text = null;
-
-    if (typeof response.text === "function") {
-      text = await response.text();
-    } else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
-      text = response.candidates[0].content.parts[0].text;
-    } else if (response.text) {
-      text = response.text;
-    } else if (
-      response.response &&
-      typeof response.response.text === "function"
-    ) {
-      text = await response.response.text();
-    }
-
-    return JSON.parse(text || "[]");
+    return JSON.parse(response.text || "[]");
   } catch (error) {
     console.error("Gemini Error:", error);
     return [];
@@ -97,38 +50,7 @@ export async function generateTitle(code: string) {
       },
     });
 
-    // Debug logging
-    console.log(
-      "[generateTitle] Full response:",
-      JSON.stringify(response, null, 2),
-    );
-
-    // Try multiple ways to extract text
-    let text = null;
-
-    // Method 1: Check if response has a text method
-    if (typeof response.text === "function") {
-      text = await response.text();
-    }
-    // Method 2: Check candidates array
-    else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
-      text = response.candidates[0].content.parts[0].text;
-    }
-    // Method 3: Direct text property
-    else if (response.text) {
-      text = response.text;
-    }
-    // Method 4: response.response.text()
-    else if (
-      response.response &&
-      typeof response.response.text === "function"
-    ) {
-      text = await response.response.text();
-    }
-
-    console.log("[generateTitle] Extracted text:", text);
-
-    return text ? text.trim() : "Untitled Snippet";
+    return response.text ? response.text.trim() : "Untitled Snippet";
   } catch (error) {
     console.error("Gemini Error:", error);
     return "Untitled Snippet";
@@ -145,23 +67,7 @@ export async function detectLanguage(code: string) {
       },
     });
 
-    // Try multiple ways to extract text
-    let text = null;
-
-    if (typeof response.text === "function") {
-      text = await response.text();
-    } else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
-      text = response.candidates[0].content.parts[0].text;
-    } else if (response.text) {
-      text = response.text;
-    } else if (
-      response.response &&
-      typeof response.response.text === "function"
-    ) {
-      text = await response.response.text();
-    }
-
-    return text ? text.trim().toLowerCase() : "javascript";
+    return response.text ? response.text.trim().toLowerCase() : "javascript";
   } catch (error) {
     console.error("Gemini Error:", error);
     return "javascript";
