@@ -61,7 +61,7 @@ export function SnippetCard({
     >
       <ContextMenu>
         <ContextMenuTrigger className="w-full">
-          <Card className="relative bg-primary/5 ">
+          <Card className="relative bg-primary/5">
             <CardHeader>
               <div className="flex justify-between items-start ">
                 <div className="flex-1 min-w-0">

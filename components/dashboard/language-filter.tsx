@@ -50,16 +50,18 @@ export function LanguageFilter({
     <Tooltip>
       <TooltipTrigger asChild>
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button
-              variant={hasFilter ? "default" : "outline"}
-              size="icon"
-              className="shadow-sm"
-            >
-              <HugeiconsIcon icon={FilterIcon} strokeWidth={2} />
-              <span className="sr-only">{tooltip}</span>
-            </Button>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant={hasFilter ? "default" : "outline"}
+                size="icon"
+                className="shadow-sm"
+              >
+                <HugeiconsIcon icon={FilterIcon} strokeWidth={2} />
+                <span className="sr-only">{tooltip}</span>
+              </Button>
+            }
+          ></DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuGroup>
               <DropdownMenuLabel>

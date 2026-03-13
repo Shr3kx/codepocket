@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Snippet } from "@/lib/types";
-
+import { showSuccessToast } from "@/lib/toast-utils";
 const STORAGE_KEY = "CodePocket_data";
 
 const DEMO_SNIPPET: Snippet = {
@@ -70,7 +70,8 @@ const debouncedSearch = debounce((query: string) => {
 const DEMO_SNIPPET_3: Snippet = {
   id: "3",
   title: "Python Context Manager",
-  description: "A custom context manager for file operations with error handling.",
+  description:
+    "A custom context manager for file operations with error handling.",
   code: `from contextlib import contextmanager
 from typing import Generator
 
@@ -105,7 +106,6 @@ with safe_file_operation('data.txt', 'r') as f:
 export function useSnippets() {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
 
-  // Initialize data
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -127,7 +127,6 @@ export function useSnippets() {
     }
   }, []);
 
-  // Save data
   useEffect(() => {
     if (typeof window !== "undefined" && snippets.length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(snippets));
@@ -140,8 +139,8 @@ export function useSnippets() {
         prev.map(s =>
           s.id === editingId
             ? ({ ...s, ...data, updatedAt: Date.now() } as Snippet)
-            : s
-        )
+            : s,
+        ),
       );
     } else {
       const newSnippet: Snippet = {
@@ -160,12 +159,13 @@ export function useSnippets() {
   };
 
   const deleteSnippet = (id: string) => {
-    if (
-      typeof window !== "undefined" &&
-      confirm("Are you sure you want to delete this snippet?")
-    ) {
-      setSnippets(prev => prev.filter(s => s.id !== id));
-    }
+    setSnippets(prev => prev.filter(s => s.id !== id));
+    onclick = () => {
+      showSuccessToast({
+        title: "Success!",
+        description: "Snippet deleted successfully.",
+      });
+    };
   };
 
   return {

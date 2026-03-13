@@ -21,7 +21,6 @@ import {
 import { Snippet, LANGUAGES } from "@/lib/types";
 import { useSnippets } from "@/hooks/use-snippets";
 import { useFilters } from "@/hooks/use-filters";
-import { useSettingsContext } from "@/contexts/settings-context";
 import {
   SidebarProvider,
   SidebarInset,
@@ -37,12 +36,27 @@ import { LanguageFilter } from "./language-filter";
 import { cn } from "@/lib/utils";
 import { BreadcrumbSeparator } from "../ui/breadcrumb";
 import { Separator } from "../ui/separator";
-
+import { useSound } from "@/hooks/use-sound";
+import { clickSoftSound } from "@/lib/click-soft";
+import { useSettingsContext } from "@/contexts/settings-context";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showWarningToast,
+  showInfoToast,
+} from "@/lib/toast-utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 interface DashboardProps {
   onSignOut: () => void;
   className?: string;
 }
-import { toast } from "sonner";
 export function Dashboard({ onSignOut, className }: DashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -51,6 +65,8 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [deletingSnippet, setDeletingSnippet] = useState<Snippet | null>(null);
+  const [play] = useSound(clickSoftSound);
 
   const { snippets, saveSnippet, deleteSnippet } = useSnippets();
   const { filteredSnippets, allTags } = useFilters(snippets, {
@@ -60,7 +76,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     selectedLanguages,
   });
   const { settings, updateSetting } = useSettingsContext();
-
+  const soundsEnabled = settings.soundsEnabled;
   const handleSaveSnippet = (data: Partial<Snippet>) => {
     saveSnippet(data, editingSnippet?.id);
     setIsEditorOpen(false);
@@ -70,32 +86,18 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
   const handleEditSnippet = (snippet: Snippet) => {
     setEditingSnippet(snippet);
     setIsEditorOpen(true);
+    if (soundsEnabled === "enabled") {
+      play();
+    }
   };
 
   const handleNewSnippet = () => {
     setEditingSnippet(null);
     setIsEditorOpen(true);
+    if (soundsEnabled === "enabled") {
+      play();
+    }
   };
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const isCtrlOrCmd = event.ctrlKey || event.metaKey;
-      const isNKey = event.key.toLowerCase() === "n";
-
-      console.log({ isCtrlOrCmd, isNKey, key: event.key });
-
-      if (isCtrlOrCmd && isNKey) {
-        event.preventDefault();
-        event.stopPropagation();
-        setEditingSnippet(null);
-        setIsEditorOpen(true);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown, true);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, []);
 
   const handleOpenLastSavedSnippet = () => {
     // TODO: Implement open last saved snippet functionality
@@ -140,6 +142,24 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
     }
   };
 
+  const handleDeleteSnippet = (id: string) => {
+    const snippet = snippets.find(s => s.id === id);
+    if (snippet) {
+      setDeletingSnippet(snippet);
+    }
+  };
+
+  const confirmDelete = () => {
+    if (deletingSnippet) {
+      deleteSnippet(deletingSnippet.id);
+      showSuccessToast({
+        title: "Snippet deleted",
+        description: `"${deletingSnippet.title}" has been removed.`,
+      });
+      setDeletingSnippet(null);
+    }
+  };
+
   const getHeaderTitle = () => {
     if (selectedFolder) return selectedFolder;
     if (selectedTag) return `#${selectedTag}`;
@@ -179,11 +199,6 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                   <p className="text-muted-foreground mt-1">
                     {filteredSnippets.length} snippets found
                   </p>
-                </div>
-                <div>
-                  <button onClick={() => toast("My first toast")}>
-                    toast check
-                  </button>
                 </div>
                 <div className="flex gap-2">
                   <LanguageFilter
@@ -262,7 +277,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                     <SnippetGrid
                       snippets={filteredSnippets}
                       onEdit={handleEditSnippet}
-                      onDelete={deleteSnippet}
+                      onDelete={handleDeleteSnippet}
                       onMove={handleMoveSnippet}
                     />
                   )}
@@ -270,7 +285,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                     <SnippetList
                       snippets={filteredSnippets}
                       onEdit={handleEditSnippet}
-                      onDelete={deleteSnippet}
+                      onDelete={handleDeleteSnippet}
                       onMove={handleMoveSnippet}
                     />
                   )}
@@ -278,7 +293,7 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
                     <SnippetCompactGrid
                       snippets={filteredSnippets}
                       onEdit={handleEditSnippet}
-                      onDelete={deleteSnippet}
+                      onDelete={handleDeleteSnippet}
                       onMove={handleMoveSnippet}
                     />
                   )}
@@ -317,6 +332,35 @@ export function Dashboard({ onSignOut, className }: DashboardProps) {
             isOpen={isSettingsOpen}
             onClose={() => setIsSettingsOpen(false)}
           />
+
+          <Dialog
+            open={!!deletingSnippet}
+            onOpenChange={open => !open && setDeletingSnippet(null)}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Snippet</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete{" "}
+                  <span className="font-semibold text-foreground">
+                    "{deletingSnippet?.title}"
+                  </span>
+                  ? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setDeletingSnippet(null)}
+                >
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={confirmDelete}>
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </SidebarInset>
       </SidebarProvider>
     </GlobalContextMenu>

@@ -382,10 +382,3 @@
   span[class*="linenumber"]:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
-
-html {
-  /* Base transition for the root element */
-  transition:
-    background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}

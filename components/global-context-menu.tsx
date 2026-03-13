@@ -16,6 +16,9 @@ import {
   Copy01Icon,
   SettingsIcon,
 } from "@hugeicons/core-free-icons";
+import { useSound } from "@/hooks/use-sound";
+import { clickSoftSound } from "@/lib/click-soft";
+import { useSettingsContext } from "@/contexts/settings-context";
 
 export interface GlobalContextMenuActions {
   onAddNewSnippet?: () => void;
@@ -36,7 +39,7 @@ export function useGlobalContextMenu() {
   const context = React.useContext(GlobalContextMenuContext);
   if (!context) {
     throw new Error(
-      "useGlobalContextMenu must be used within GlobalContextMenu"
+      "useGlobalContextMenu must be used within GlobalContextMenu",
     );
   }
   return context;
@@ -46,6 +49,16 @@ export function GlobalContextMenu({
   children,
   actions,
 }: GlobalContextMenuProps) {
+  const { settings } = useSettingsContext();
+  const soundsEnabled = settings.soundsEnabled;
+  const [play] = useSound(clickSoftSound);
+
+  function handlePlay() {
+    if (soundsEnabled === "enabled") {
+      play();
+    }
+  }
+
   return (
     <GlobalContextMenuContext.Provider value={actions}>
       <ContextMenu>
@@ -54,7 +67,10 @@ export function GlobalContextMenu({
         </ContextMenuTrigger>
         <ContextMenuContent className="w-56">
           <ContextMenuItem
-            onClick={actions.onAddNewSnippet}
+            onClick={() => {
+              handlePlay();
+              actions.onAddNewSnippet?.();
+            }}
             className="cursor-pointer"
           >
             <HugeiconsIcon
@@ -69,7 +85,10 @@ export function GlobalContextMenu({
           <ContextMenuSeparator />
 
           <ContextMenuItem
-            onClick={actions.onOpenLastSavedSnippet}
+            onClick={() => {
+              handlePlay();
+              actions.onOpenLastSavedSnippet?.();
+            }}
             disabled={!actions.onOpenLastSavedSnippet}
             className="cursor-pointer"
           >
@@ -83,7 +102,10 @@ export function GlobalContextMenu({
           </ContextMenuItem>
 
           <ContextMenuItem
-            onClick={actions.onCopyLastAddedSnippet}
+            onClick={() => {
+              handlePlay();
+              actions.onCopyLastAddedSnippet?.();
+            }}
             disabled={!actions.onCopyLastAddedSnippet}
             className="cursor-pointer"
           >
@@ -97,7 +119,10 @@ export function GlobalContextMenu({
           </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem
-            onClick={actions.onOpenSettings}
+            onClick={() => {
+              handlePlay();
+              actions.onOpenSettings?.();
+            }}
             className="cursor-pointer"
           >
             <HugeiconsIcon

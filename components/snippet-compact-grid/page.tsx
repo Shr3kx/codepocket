@@ -54,8 +54,8 @@ export function SnippetCompactGrid({
   return (
     <div
       className={cn(
-        "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3",
-        className
+        "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4",
+        className,
       )}
     >
       <AnimatePresence>
@@ -71,11 +71,11 @@ export function SnippetCompactGrid({
           >
             <ContextMenu>
               <ContextMenuTrigger className="w-full">
-                <Card className="relative h-full">
-                  <CardHeader className="pb-2">
+                <Card className="relative h-60  flex flex-col bg-neutral-100 dark:bg-neutral-800/30 ">
+                  <CardHeader className="pb-2 shrink-0">
                     <div className="flex justify-between items-start">
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-sm truncate">
+                        <CardTitle className="text-sm line-clamp-2">
                           {snippet.title}
                         </CardTitle>
                         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
@@ -110,15 +110,13 @@ export function SnippetCompactGrid({
                     </div>
                   </CardHeader>
 
-                  <CardContent className="pb-2">
-                    {snippet.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                        {snippet.description}
-                      </p>
-                    )}
+                  <CardContent className="pb-2 flex-1 min-h-0">
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {snippet.description || "No description"}
+                    </p>
                   </CardContent>
 
-                  <CardFooter className="flex flex-wrap gap-1.5 pt-0">
+                  <CardFooter className="flex flex-wrap gap-1.5 pt-0 flex-shrink-0">
                     <Badge
                       variant="secondary"
                       className="uppercase text-[9px] px-1 py-0"
@@ -136,7 +134,7 @@ export function SnippetCompactGrid({
                           strokeWidth={2}
                           className="size-2"
                         />
-                        <span className="truncate max-w-[60px]">{tag}</span>
+                        <span className="truncate max-w-15">{tag}</span>
                       </Badge>
                     ))}
                     {snippet.tags.length > 2 && (

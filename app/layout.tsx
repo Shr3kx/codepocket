@@ -3,7 +3,8 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SettingsProvider } from "@/contexts/settings-context";
-import { Toaster } from "sonner";
+import { sileo, Toaster } from "sileo";
+
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
@@ -36,17 +37,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SettingsProvider>
-            {children}
-            <Toaster
-              position="bottom-right"
-              theme="system"
-              richColors
-              closeButton
-              duration={4000}
-              swipeDirections={["right", "left"]}
-            />
-          </SettingsProvider>
+          <Toaster position="bottom-right" />
+          <SettingsProvider>{children}</SettingsProvider>
         </ThemeProvider>
       </body>
     </html>

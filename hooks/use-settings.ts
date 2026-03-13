@@ -3,6 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 
 export interface CodePocketSettings {
+  // General
+  interfaceLanguage: "en" | "es" | "fr" | "de";
+  keyboardShortcuts: "enabled" | "disabled";
+  notifications: "enabled" | "disabled";
+  soundsEnabled: "enabled" | "disabled";
+
   // Appearance
   theme: "light" | "dark" | "system";
   accentColor: "blue" | "green" | "purple" | "orange" | "red" | "pink";
@@ -42,6 +48,10 @@ export interface CodePocketSettings {
 }
 
 const DEFAULT_SETTINGS: CodePocketSettings = {
+  interfaceLanguage: "en",
+  keyboardShortcuts: "enabled",
+  notifications: "enabled",
+  soundsEnabled: "enabled",
   theme: "system",
   accentColor: "blue",
   fontSize: "medium",
@@ -76,7 +86,8 @@ const DEFAULT_SETTINGS: CodePocketSettings = {
 const STORAGE_KEY = "CodePocket_settings";
 
 export function useSettings() {
-  const [settings, setSettings] = useState<CodePocketSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] =
+    useState<CodePocketSettings>(DEFAULT_SETTINGS);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load settings from localStorage
@@ -105,15 +116,15 @@ export function useSettings() {
   const updateSetting = useCallback(
     <K extends keyof CodePocketSettings>(
       key: K,
-      value: CodePocketSettings[K]
+      value: CodePocketSettings[K],
     ) => {
-      setSettings((prev) => ({ ...prev, [key]: value }));
+      setSettings(prev => ({ ...prev, [key]: value }));
     },
-    []
+    [],
   );
 
   const updateSettings = useCallback((updates: Partial<CodePocketSettings>) => {
-    setSettings((prev) => ({ ...prev, ...updates }));
+    setSettings(prev => ({ ...prev, ...updates }));
   }, []);
 
   const resetSettings = useCallback(() => {

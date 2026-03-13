@@ -88,24 +88,61 @@ export function EditorModal({
     if (!formData.code) return;
     setIsAiLoading(true);
     try {
-      // TODO: Implement AI optimization when API key is configured
-      // const [explanation, tags] = await Promise.all([
-      //   explainCode(formData.code, formData.language || 'javascript'),
-      //   suggestTags(formData.code)
-      // ]);
-      // setFormData(prev => ({
-      //   ...prev,
-      //   description: explanation || prev.description,
-      //   tags: [...new Set([...(prev.tags || []), ...tags])]
-      // }));
+      // Call all AI endpoints in parallel
+      const [titleRes, languageRes, descriptionRes, tagsRes] =
+        await Promise.all([
+          fetch("/api/ai/generate-title", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: formData.code }),
+          }),
+          fetch("/api/ai/detect-language", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: formData.code }),
+          }),
+          fetch("/api/ai/explain-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              code: formData.code,
+              language: formData.language,
+            }),
+          }),
+          fetch("/api/ai/suggest-tags", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: formData.code }),
+          }),
+        ]);
 
-      // Placeholder for now
-      await new Promise(resolve => setTimeout(resolve, 500));
-      alert(
-        "AI optimization feature is not yet configured. Please set up the API key.",
-      );
+      const [titleData, languageData, descriptionData, tagsData] =
+        await Promise.all([
+          titleRes.json(),
+          languageRes.json(),
+          descriptionRes.json(),
+          tagsRes.json(),
+        ]);
+
+      // Debug: Log API responses
+      console.log("AI API Responses:", {
+        title: titleData,
+        language: languageData,
+        description: descriptionData,
+        tags: tagsData,
+      });
+
+      // Update form data with AI-generated content
+      setFormData(prev => ({
+        ...prev,
+        title: titleData.title || prev.title,
+        language: languageData.language || prev.language,
+        description: descriptionData.description || prev.description,
+        tags: [...new Set([...(prev.tags || []), ...(tagsData.tags || [])])],
+      }));
     } catch (error) {
       console.error("AI optimization error:", error);
+      alert("Failed to generate AI content. Please check your API key.");
     } finally {
       setIsAiLoading(false);
     }
@@ -173,7 +210,7 @@ export function EditorModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 ">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -283,13 +320,36 @@ export function EditorModal({
                     className="flex items-center justify-between w-full"
                   >
                     <span>Description</span>
-                    <button
-                      className="cursor-pointer"
-                      onClick={handleAiOptimize}
-                      disabled={isAiLoading || !formData.code}
-                    >
-                      Generate with AI
-                    </button>
+                    {formData.code && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleAiOptimize}
+                        disabled={isAiLoading}
+                        className="h-7 gap-1.5 text-xs cursor-pointer"
+                      >
+                        {isAiLoading ? (
+                          <>
+                            <HugeiconsIcon
+                              icon={LoadingIcon}
+                              strokeWidth={2}
+                              className="size-3.5 animate-spin"
+                            />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <HugeiconsIcon
+                              icon={AiMagicIcon}
+                              strokeWidth={2}
+                              className="size-3.5"
+                            />
+                            Generate with AI
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </FieldLabel>
                   <Textarea
                     id="snippet-description"
@@ -438,7 +498,13 @@ export function EditorModal({
             >
               Cancel
             </Button>
-            <Button onClick={() => onSave(formData)} className="cursor-pointer">
+            <Button
+              onClick={() => {
+                console.log("Snippet Data:", JSON.stringify(formData));
+                onSave(formData);
+              }}
+              className="cursor-pointer"
+            >
               <HugeiconsIcon icon={FloppyDiskIcon} strokeWidth={2} />
               Save Snippet
             </Button>
